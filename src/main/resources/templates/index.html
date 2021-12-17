@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="ISO-8859-1">   
+    <title>User Data</title>
+</head>
+<body>
+    <div align="center">
+        <h1>User List</h1>
+
+        <div sec:authorize="isAuthenticated()">
+            Welcome <b><span sec:authentication="name">Username</span></b>&nbsp;
+            <i><span sec:authentication="principal.authorities">Roles</span></i>
+        </div>
+
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Logout"/>
+        </form>
+
+        <div sec:authorize="hasAnyAuthority('ADMIN')">
+            <a href="/newUser"> Add New Student</a>
+        </div>
+        <br>
+        <table border="1" cellpadding="10"> 
+            <thead>
+                <tr> 
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone Number</th>
+                    <th>E-mail</th>
+                    <th sec:authorize="hasAnyAuthority('ADMIN')" >Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${listUser}">
+					<td th:text="${user.uid}">User ID</td>
+                    <td th:text="${user.uname}">User Name</td>
+					<td th:text="${user.phoneNumber}">User Phone Number</td>
+					<td th:text="${user.email}">User E-mail</td> 
+                    <td>
+                        <div sec:authorize="hasAnyAuthority('USER','ADMIN')">
+                            <a th:href="@{'/edit/' + ${user.uid}}">Edit</a>
+                        </div>                        
+                        &nbsp;&nbsp;&nbsp;
+                        <div sec:authorize="hasAnyAuthority('ADMIN')">
+                            <a th:href="@{'/delete/' + ${user.uid}}">Delete</a>
+                        </div>
+                        
+                    </td>                                      
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
